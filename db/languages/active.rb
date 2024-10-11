@@ -356,5 +356,19 @@
     id: 89,
     name: "Multi-file program",
     is_archived: false,
+  },
+  {
+    id: 90,
+    name: "JavaScript (Node.js 20.18.0)",
+    is_archived: false,
+    source_file: "script.js",
+    run_cmd: "/usr/bin/node script.js"
+  },
+  {
+    id: 91,
+    name: "Python (3.13.0)",
+    is_archived: false,
+    source_file: "script.py",
+    run_cmd: "/usr/local/bin/python3.13 script.py"
   }
 ]

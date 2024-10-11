@@ -1,12 +1,12 @@
-FROM judge0/compilers:1.4.0 AS production
+FROM hiroshees/code-compiler:0.6 AS production
 
-ENV JUDGE0_HOMEPAGE "https://judge0.com"
+ENV JUDGE0_HOMEPAGE "https://codeofgenius.net/"
 LABEL homepage=$JUDGE0_HOMEPAGE
 
-ENV JUDGE0_SOURCE_CODE "https://github.com/judge0/judge0"
+ENV JUDGE0_SOURCE_CODE "https://github.com/hiroshees/code-runner"
 LABEL source_code=$JUDGE0_SOURCE_CODE
 
-ENV JUDGE0_MAINTAINER "Herman Zvonimir Došilović <hermanz.dosilovic@gmail.com>"
+ENV JUDGE0_MAINTAINER "Hiroshi Fujiwara <hiroshi.829f@gmail.com>"
 LABEL maintainer=$JUDGE0_MAINTAINER
 
 ENV PATH "/usr/local/ruby-2.7.0/bin:/opt/.gem/bin:$PATH"
@@ -22,7 +22,8 @@ RUN apt-get update && \
     gem install bundler:2.1.4 && \
     npm install -g --unsafe-perm aglio@2.3.0
 
-EXPOSE 2358
+ENV VIRTUAL_PORT 2358
+EXPOSE $VIRTUAL_PORT
 
 WORKDIR /api
 
@@ -37,16 +38,22 @@ COPY . .
 ENTRYPOINT ["/api/docker-entrypoint.sh"]
 CMD ["/api/scripts/server"]
 
-RUN useradd -u 1000 -m -r judge0 && \
-    echo "judge0 ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers && \
-    chown judge0: /api/tmp/
-
-USER judge0
-
-ENV JUDGE0_VERSION "1.13.1"
+ENV JUDGE0_VERSION "0.3"
 LABEL version=$JUDGE0_VERSION
 
 
 FROM production AS development
+
+ARG DEV_USER=judge0
+ARG DEV_USER_ID=1000
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        tmux \
+        vim && \
+    useradd -u $DEV_USER_ID -m -r $DEV_USER && \
+    echo "$DEV_USER ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers
+
+USER $DEV_USER
 
 CMD ["sleep", "infinity"]
